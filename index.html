@@ -32,9 +32,8 @@ line-height: 1.9;
 font-weight: bold;
 }
 
-/* Hidden on screen, shown only when printing */
 #printWorksheet {
-display: none;
+margin-top: 35px;
 }
 
 table {
@@ -55,24 +54,13 @@ background-color: #f2f2f2;
 }
 
 .qty-space {
-height: 28px;
-}
-
-.line {
-display: inline-block;
-border-bottom: 1px solid #000;
-min-width: 220px;
-height: 18px;
-vertical-align: bottom;
+height: 40px;
+width: 140px;
 }
 
 @media print {
-button, select, label, #output, h2.screen-title, p.screen-note {
+button, select, label {
 display: none !important;
-}
-
-#printWorksheet {
-display: block !important;
 }
 
 body {
@@ -84,8 +72,7 @@ max-width: 100%;
 </head>
 <body>
 
-<h2 class="screen-title">Business Day Aging Calculator</h2>
-<p class="screen-note">Generate shows the ranges. Print creates a worksheet with blank space for quantity.</p>
+<h2>Business Day Aging Calculator</h2>
 
 <label for="schedule">Select Schedule:</label><br>
 <select id="schedule">
@@ -95,10 +82,9 @@ max-width: 100%;
 
 <br>
 <button onclick="calculateAging()">Generate</button>
-<button onclick="printWorksheet()">Print</button>
+<button onclick="window.print()">Print</button>
 
 <div id="output"></div>
-
 <div id="printWorksheet"></div>
 
 <script>
@@ -106,11 +92,11 @@ function isBusinessDay(date, schedule) {
 const day = date.getDay();
 
 if (schedule === "monfri") {
-return day !== 0 && day !== 6; // Sunday and Saturday closed
+return day !== 0 && day !== 6;
 }
 
 if (schedule === "tuesat") {
-return day !== 0 && day !== 1; // Sunday and Monday closed
+return day !== 0 && day !== 1;
 }
 
 return false;
@@ -164,14 +150,9 @@ document.getElementById("output").innerHTML = `
 <div><span class="label">6-10 days old:</span> ${data.range610}</div>
 <div><span class="label">Over 10 days old:</span> ${data.over10}</div>
 `;
-}
-
-function buildPrintWorksheet() {
-const data = getAgingData();
 
 document.getElementById("printWorksheet").innerHTML = `
 <h2>Business Day Aging Worksheet</h2>
-
 <div><strong>Today:</strong> ${data.today}</div>
 <div><strong>Schedule:</strong> ${data.scheduleLabel}</div>
 
@@ -201,23 +182,8 @@ document.getElementById("printWorksheet").innerHTML = `
 <td>${data.over10}</td>
 <td class="qty-space"></td>
 </tr>
-<tr>
-<td><strong>Total Units</strong></td>
-<td></td>
-<td class="qty-space"></td>
-</tr>
 </table>
-
-<br><br>
-<div><strong>Completed By:</strong> <span class="line"></span></div>
-<br>
-<div><strong>Date:</strong> <span class="line"></span></div>
 `;
-}
-
-function printWorksheet() {
-buildPrintWorksheet();
-window.print();
 }
 </script>
 
