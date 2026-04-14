@@ -1,58 +1,116 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Aging Calculator</title>
+<title>Business Day Aging Calculator</title>
 <style>
 body {
-font-family: Arial;
+font-family: Arial, sans-serif;
 padding: 20px;
-max-width: 700px;
+max-width: 800px;
 margin: auto;
 }
 
+h2 {
+margin-bottom: 10px;
+}
+
 button, select {
-padding: 10px;
+padding: 10px 14px;
 margin-top: 10px;
+margin-right: 10px;
 font-size: 16px;
+cursor: pointer;
 }
 
 #output {
 margin-top: 25px;
 font-size: 18px;
-line-height: 1.8;
+line-height: 1.9;
 }
 
 .label {
 font-weight: bold;
 }
+
+/* Hidden on screen, shown only when printing */
+#printWorksheet {
+display: none;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 15px;
+}
+
+th, td {
+border: 1px solid #000;
+padding: 10px;
+text-align: left;
+font-size: 16px;
+}
+
+th {
+background-color: #f2f2f2;
+}
+
+.qty-space {
+height: 28px;
+}
+
+.line {
+display: inline-block;
+border-bottom: 1px solid #000;
+min-width: 220px;
+height: 18px;
+vertical-align: bottom;
+}
+
+@media print {
+button, select, label, #output, h2.screen-title, p.screen-note {
+display: none !important;
+}
+
+#printWorksheet {
+display: block !important;
+}
+
+body {
+padding: 0;
+max-width: 100%;
+}
+}
 </style>
 </head>
 <body>
 
-<h2>Business Day Aging Calculator</h2>
+<h2 class="screen-title">Business Day Aging Calculator</h2>
+<p class="screen-note">Generate shows the ranges. Print creates a worksheet with blank space for quantity.</p>
 
-<label>Select Schedule:</label><br>
+<label for="schedule">Select Schedule:</label><br>
 <select id="schedule">
-<option value="monfri">Mon–Fri</option>
-<option value="tuesat">Tue–Sat</option>
+<option value="monfri">Mon-Fri</option>
+<option value="tuesat">Tue-Sat</option>
 </select>
 
 <br>
 <button onclick="calculateAging()">Generate</button>
+<button onclick="printWorksheet()">Print</button>
 
 <div id="output"></div>
 
-<script>
+<div id="printWorksheet"></div>
 
+<script>
 function isBusinessDay(date, schedule) {
 const day = date.getDay();
 
 if (schedule === "monfri") {
-return day !== 0 && day !== 6; // Sun & Sat off
+return day !== 0 && day !== 6; // Sunday and Saturday closed
 }
 
 if (schedule === "tuesat") {
-return day !== 0 && day !== 1; // Sun & Mon off
+return day !== 0 && day !== 1; // Sunday and Monday closed
 }
 
 return false;
@@ -65,6 +123,7 @@ return `${date.getMonth() + 1}/${date.getDate()}`;
 function getPreviousBusinessDays(startDate, count, schedule) {
 const days = [];
 const current = new Date(startDate);
+current.setHours(12, 0, 0, 0);
 
 while (days.length < count) {
 if (isBusinessDay(current, schedule)) {
@@ -76,27 +135,90 @@ current.setDate(current.getDate() - 1);
 return days;
 }
 
-function calculateAging() {
+function getAgingData() {
 const schedule = document.getElementById("schedule").value;
-
 const today = new Date();
 today.setHours(12, 0, 0, 0);
 
 const days = getPreviousBusinessDays(today, 11, schedule);
 
-const outputHtml = `
-<div><span class="label">Today:</span> ${formatDate(today)}</div>
-<div><span class="label">Schedule:</span> ${schedule === "monfri" ? "Mon–Fri" : "Tue–Sat"}</div>
-<br>
-<div><span class="label">0-1 days old:</span> ${formatDate(days[1])} to ${formatDate(days[0])}</div>
-<div><span class="label">2-5 days old:</span> ${formatDate(days[5])} to ${formatDate(days[2])}</div>
-<div><span class="label">6-10 days old:</span> ${formatDate(days[10])} to ${formatDate(days[6])}</div>
-<div><span class="label">Over 10 days old:</span> Before ${formatDate(days[10])}</div>
-`;
-
-document.getElementById("output").innerHTML = outputHtml;
+return {
+today: formatDate(today),
+scheduleLabel: schedule === "monfri" ? "Mon-Fri" : "Tue-Sat",
+range01: `${formatDate(days[1])} to ${formatDate(days[0])}`,
+range25: `${formatDate(days[5])} to ${formatDate(days[2])}`,
+range610: `${formatDate(days[10])} to ${formatDate(days[6])}`,
+over10: `Before ${formatDate(days[10])}`
+};
 }
 
+function calculateAging() {
+const data = getAgingData();
+
+document.getElementById("output").innerHTML = `
+<div><span class="label">Today:</span> ${data.today}</div>
+<div><span class="label">Schedule:</span> ${data.scheduleLabel}</div>
+<br>
+<div><span class="label">0-1 days old:</span> ${data.range01}</div>
+<div><span class="label">2-5 days old:</span> ${data.range25}</div>
+<div><span class="label">6-10 days old:</span> ${data.range610}</div>
+<div><span class="label">Over 10 days old:</span> ${data.over10}</div>
+`;
+}
+
+function buildPrintWorksheet() {
+const data = getAgingData();
+
+document.getElementById("printWorksheet").innerHTML = `
+<h2>Business Day Aging Worksheet</h2>
+
+<div><strong>Today:</strong> ${data.today}</div>
+<div><strong>Schedule:</strong> ${data.scheduleLabel}</div>
+
+<table>
+<tr>
+<th>Bucket</th>
+<th>Date Range</th>
+<th>Qty Counted</th>
+</tr>
+<tr>
+<td>0-1 days old</td>
+<td>${data.range01}</td>
+<td class="qty-space"></td>
+</tr>
+<tr>
+<td>2-5 days old</td>
+<td>${data.range25}</td>
+<td class="qty-space"></td>
+</tr>
+<tr>
+<td>6-10 days old</td>
+<td>${data.range610}</td>
+<td class="qty-space"></td>
+</tr>
+<tr>
+<td>Over 10 days old</td>
+<td>${data.over10}</td>
+<td class="qty-space"></td>
+</tr>
+<tr>
+<td><strong>Total Units</strong></td>
+<td></td>
+<td class="qty-space"></td>
+</tr>
+</table>
+
+<br><br>
+<div><strong>Completed By:</strong> <span class="line"></span></div>
+<br>
+<div><strong>Date:</strong> <span class="line"></span></div>
+`;
+}
+
+function printWorksheet() {
+buildPrintWorksheet();
+window.print();
+}
 </script>
 
 </body>
