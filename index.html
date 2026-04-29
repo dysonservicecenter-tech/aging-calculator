@@ -44,10 +44,12 @@ th, td {
 th {
   background-color: #f2f2f2;
 }
-.qty-space {
-  height: 40px;
-  width: 140px;
-}
+.bucket-col { width: 90px; }
+.date-range-col { width: 130px; }
+.status-col { width: 65px; text-align: center; }
+.total-aging-col { width: 75px; text-align: center; font-weight: bold; background: #f9f9f9;}
+.total-queue-label { text-align: right; font-weight: bold; background: #f9f9f9;}
+.total-queue-cell { background: #f0f0f0; font-weight: bold; }
 @media print {
   button, select, label {
     display: none !important;
@@ -55,6 +57,9 @@ th {
   body {
     padding: 0;
     max-width: 100%;
+  }
+  table, th, td {
+    font-size: 15px;
   }
 }
 </style>
@@ -129,44 +134,57 @@ function calculateAging() {
     <div><strong>Schedule:</strong> ${data.scheduleLabel}</div>
     <table>
       <tr>
-        <th>Bucket</th>
-        <th>Date Range</th>
-        <th>Walk-in Queue</th>
-        <th>Shipped to Queue</th>
-        <th>Waiting on Customer</th>
-        <th>Waiting on Parts</th>
+        <th class="bucket-col">Bucket</th>
+        <th class="date-range-col">Date Range</th>
+        <th class="status-col">Walk-in Queue</th>
+        <th class="status-col">Shipped to Queue</th>
+        <th class="status-col">Waiting on Customer</th>
+        <th class="status-col">Waiting on Parts</th>
+        <th class="total-aging-col">Total Aging</th>
       </tr>
       <tr>
-        <td>0–1 day</td>
-        <td>${data.range01}</td>
-        <td class="qty-space"></td>
-        <td class="qty-space"></td>
-        <td class="qty-space"></td>
-        <td class="qty-space"></td>
+        <td class="bucket-col">0–1 day</td>
+        <td class="date-range-col">${data.range01}</td>
+        <td class="status-col"></td>
+        <td class="status-col"></td>
+        <td class="status-col"></td>
+        <td class="status-col"></td>
+        <td class="total-aging-col"></td>
       </tr>
       <tr>
-        <td>2–5 days</td>
-        <td>${data.range25}</td>
-        <td class="qty-space"></td>
-        <td class="qty-space"></td>
-        <td class="qty-space"></td>
-        <td class="qty-space"></td>
+        <td class="bucket-col">2–5 days</td>
+        <td class="date-range-col">${data.range25}</td>
+        <td class="status-col"></td>
+        <td class="status-col"></td>
+        <td class="status-col"></td>
+        <td class="status-col"></td>
+        <td class="total-aging-col"></td>
       </tr>
       <tr>
-        <td>6–10 days</td>
-        <td>${data.range610}</td>
-        <td class="qty-space"></td>
-        <td class="qty-space"></td>
-        <td class="qty-space"></td>
-        <td class="qty-space"></td>
+        <td class="bucket-col">6–10 days</td>
+        <td class="date-range-col">${data.range610}</td>
+        <td class="status-col"></td>
+        <td class="status-col"></td>
+        <td class="status-col"></td>
+        <td class="status-col"></td>
+        <td class="total-aging-col"></td>
       </tr>
       <tr>
-        <td>Over 10 days</td>
-        <td>${data.over10}</td>
-        <td class="qty-space"></td>
-        <td class="qty-space"></td>
-        <td class="qty-space"></td>
-        <td class="qty-space"></td>
+        <td class="bucket-col">Over 10 days</td>
+        <td class="date-range-col">${data.over10}</td>
+        <td class="status-col"></td>
+        <td class="status-col"></td>
+        <td class="status-col"></td>
+        <td class="status-col"></td>
+        <td class="total-aging-col"></td>
+      </tr>
+      <tr>
+        <td class="total-queue-label" colspan="2">Total Queue</td>
+        <td class="total-queue-cell"></td>
+        <td class="total-queue-cell"></td>
+        <td class="total-queue-cell"></td>
+        <td class="total-queue-cell"></td>
+        <td class="total-aging-col"></td>
       </tr>
     </table>
   `;
