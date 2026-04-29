@@ -37,10 +37,10 @@ table {
 }
 th, td {
   border: 1px solid #000;
-  padding: 10px 10px 18px 10px;   /* Wider bottom padding for easier handwriting */
+  padding: 10px 10px 18px 10px;
   text-align: left;
   font-size: 16px;
-  height: 70px;                   /* Taller rows */
+  height: 70px;
 }
 th {
   background-color: #f2f2f2;
@@ -51,6 +51,7 @@ th {
 .total-aging-col { width: 75px; text-align: center; font-weight: bold; background: #f9f9f9;}
 .total-queue-label { text-align: right; font-weight: bold; background: #f9f9f9;}
 .total-queue-cell { background: #f0f0f0; font-weight: bold; }
+
 @media print {
   button, select, label {
     display: none !important;
@@ -59,8 +60,26 @@ th {
     padding: 0;
     max-width: 100%;
   }
+  /* Make ONLY info and heading above table compact on print */
+  #output,
+  #output .label,
+  #output div {
+    font-size: 12px !important;
+    line-height: 1.1 !important;
+    margin: 0 0 2px 0 !important;
+  }
+  #printWorksheet h2 {
+    font-size: 15px !important;
+    margin-bottom: 4px !important;
+    margin-top: 4px !important;
+  }
+  #printWorksheet {
+    margin-top: 6px !important;
+  }
   table, th, td {
-    font-size: 15px;
+    font-size: 16px !important;
+    height: 70px !important;
+    padding: 10px 10px 18px 10px !important;
   }
 }
 </style>
@@ -122,7 +141,6 @@ function calculateAging() {
   document.getElementById("output").innerHTML = `
     <div><span class="label">Today:</span> ${data.today}</div>
     <div><span class="label">Schedule:</span> ${data.scheduleLabel}</div>
-    <br>
     <div><span class="label">0-1 days old:</span> ${data.range01}</div>
     <div><span class="label">2-5 days old:</span> ${data.range25}</div>
     <div><span class="label">6-10 days old:</span> ${data.range610}</div>
